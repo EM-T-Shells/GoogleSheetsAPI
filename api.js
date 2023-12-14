@@ -1,29 +1,39 @@
 const { google } = require('googleapis');
-const keys = require('./keys.json');
 
-const client = new google.auth.JWT(
-    keys.client_email,
-    null,
-    keys.private_key,
-    ['https://www.googleapis.com/auth/spreadsheets']
-);
+// Load credentials from the JSON file you downloaded
+const credentials = require('./keys.json');
 
-client.authorize(function(err, tokens){
-    if (err) {
-        return console.log(err);
-    } else {
-        console.log("connected!");
-    }
+// Configure the Google Sheets API
+const sheets = google.sheets({
+    version: 'v4',
+    auth: new google.auth.JWT(
+      credentials.client_email,
+      null,
+      credentials.private_key,
+      ['https://www.googleapis.com/auth/spreadsheets'],
+    ),
 });
 
-async function gsrun(client) {
-    const sheetsAPI = google.sheets({version:'v4', auth: client});
-    const opt = {
-        sheetId : '1vk9U8D8WY3EvQcqSVFPE9mzg5Wz1XjWd8vh5HsUMva8',
-        range : 'Data!A1:B1000'
-    };
+module.exports = {
+  submitToGoogleSheet: (req, res) => {
+    const name = req.body.name;
 
-    let data = await sheetsAPI.spreadsheets.values.get(opt);
-    console.log(data);
-
+    // Append data to the Google Sheet
+    sheets.spreadsheets.values.append({
+      spreadsheetId: '1vk9U8D8WY3EvQcqSVFPE9mzg5Wz1XjWd8vh5HsUMva8',
+      range: 'Sheet1', // Update with your sheet name
+      valueInputOption: 'USER_ENTERED',
+      resource: {
+        values: [[name]],
+      },
+    }, (err, result) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send('Error submitting data to Google Sheet');
+      } else {
+        console.log('Data submitted to Google Sheet:', result.data);
+        res.send('Data submitted successfully!');
+      }
+    });
+  },
 };
