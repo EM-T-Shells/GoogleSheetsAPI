@@ -2,13 +2,13 @@ const { google } = require('googleapis');
 const credentials = require('./keys.json');
 
 const sheets = google.sheets({
-    version: 'v4',
-    auth: new google.auth.JWT(
-      credentials.client_email,
-      null,
-      credentials.private_key,
-      ['https://www.googleapis.com/auth/spreadsheets'],
-    ),
+  version: 'v4',
+  auth: new google.auth.JWT(
+    credentials.client_email,
+    null,
+    credentials.private_key,
+    ['https://www.googleapis.com/auth/spreadsheets'],
+  ),
 });
 
 module.exports = {
@@ -16,22 +16,32 @@ module.exports = {
     const name = req.body.name;
 
     try {
-      // Create a new spreadsheet
-      const spreadsheetResponse = await sheets.spreadsheets.create({
+      // Get the spreadsheet information
+      const spreadsheetInfo = await sheets.spreadsheets.get({
+        spreadsheetId: '1vk9U8D8WY3EvQcqSVFPE9mzg5Wz1XjWd8vh5HsUMva8',
+      });
+
+      // Create a new sheet
+      const newSheetTitle = `Sheet${spreadsheetInfo.data.sheets.length + 1}`;
+      await sheets.spreadsheets.batchUpdate({
+        spreadsheetId: '1vk9U8D8WY3EvQcqSVFPE9mzg5Wz1XjWd8vh5HsUMva8',
         resource: {
-          properties: {
-            title: `Form Responses - ${Date.now()}`,
-          },
+          requests: [
+            {
+              addSheet: {
+                properties: {
+                  title: newSheetTitle,
+                },
+              },
+            },
+          ],
         },
       });
 
-      // Extract the spreadsheetId from the response
-      const spreadsheetId = spreadsheetResponse.data.spreadsheetId;
-
-      // Append data to the new Google Sheet
+      // Append data to the new sheet
       const appendResult = await sheets.spreadsheets.values.append({
-        spreadsheetId: spreadsheetId,
-        range: 'Sheet1', // Update with your sheet name
+        spreadsheetId: '1vk9U8D8WY3EvQcqSVFPE9mzg5Wz1XjWd8vh5HsUMva8',
+        range: `${newSheetTitle}!A1`, // Use dynamic range
         valueInputOption: 'USER_ENTERED',
         resource: {
           values: [[name]],
@@ -41,7 +51,7 @@ module.exports = {
       console.log('Data submitted to Google Sheet:', appendResult.data);
 
       // Redirect to the Google Sheets document
-      const googleSheetsUrl = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/edit`;
+      const googleSheetsUrl = `https://docs.google.com/spreadsheets/d/1vk9U8D8WY3EvQcqSVFPE9mzg5Wz1XjWd8vh5HsUMva8/edit`;
       res.redirect(googleSheetsUrl);
     } catch (error) {
       console.error(error);
