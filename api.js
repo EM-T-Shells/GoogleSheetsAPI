@@ -4,16 +4,20 @@ const credentials = require('./keys.json');
 const mysql = require('mysql');
 const util = require('util');
 
+const dotenv = require('dotenv');
+dotenv.config();
+
 let jsonData = null;
 
 const pool = mysql.createPool({
   connectionLimit: 10,
-  host: "united2heal.cxsnwexuvrto.us-east-1.rds.amazonaws.com",
-  user: "united2heal",
-  password: "ilovevcu123",
-  port: "3306",
-  database: "u2hdb"
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  port: process.env.DB_PORT,
+  database: process.env.DB_DATABASE,
 });
+
 
 // Promisify the pool.query function
 const query = util.promisify(pool.query).bind(pool);
