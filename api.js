@@ -56,8 +56,9 @@ module.exports = {
         spreadsheetId: '1vk9U8D8WY3EvQcqSVFPE9mzg5Wz1XjWd8vh5HsUMva8',
       });
 
+      const newSheetTitle = `Box${box}_Group${name}`;
+
       // Create a new sheet
-      const newSheetTitle = `Sheet${spreadsheetInfo.data.sheets.length + 1}`;
       await sheets.spreadsheets.batchUpdate({
         spreadsheetId: '1vk9U8D8WY3EvQcqSVFPE9mzg5Wz1XjWd8vh5HsUMva8',
         resource: {
