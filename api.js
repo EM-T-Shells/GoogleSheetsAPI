@@ -29,7 +29,7 @@ module.exports = {
 
     try {
       const result = await query('SELECT * FROM u2hdb.ItemBox WHERE GroupName = ? AND BoxNumber = ?', [name, box]);
-
+      
       console.log('Row Details:', JSON.stringify(result));
 
       jsonData = result;
@@ -40,8 +40,8 @@ module.exports = {
       // The rest of your code...
     } catch (err) {
       console.error(err);
-      res.status(500).send('Error querying database');
-      return; // Exit the function on error
+      res.status(500).send('Error processing the request');
+      return;  
     }
 
     const sheets = google.sheets({
