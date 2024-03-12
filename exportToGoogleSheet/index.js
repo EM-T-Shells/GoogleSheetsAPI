@@ -26,12 +26,16 @@ const pool = mysql.createPool({
 });
 
 // Promisify the pool.query function
-const query = util.promisify(pool.query).bind(pool);d
+const query = util.promisify(pool.query).bind(pool);
 
 exports.handler = async function(event) {
   try {
-    const groupName = event.queryStringParameters.groupName;
-    const boxNumber = event.queryStringParameters.boxNumber;
+    /*
+    Using the ternary operator to assign `groupName` and `boxNumber` ensures null values are assigned if `event.queryStringParameters` is undefined, preventing potential TypeError.
+    */
+    const groupName = event.queryStringParameters ? event.queryStringParameters.groupName : null;
+    const boxNumber = event.queryStringParameters ? event.queryStringParameters.boxNumber : null;
+
 
     // Queue the processing task asynchronously
     await processAsync(groupName, boxNumber);

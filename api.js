@@ -1,6 +1,5 @@
 const { google } = require('googleapis');
-const credentials = require('./keys.json');
-
+const credentials = require('./exportToGoogleSheet/keys.json');
 const mysql = require('mysql');
 const util = require('util');
 
