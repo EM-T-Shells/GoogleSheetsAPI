@@ -17,8 +17,6 @@ const pool = mysql.createPool({
   database: process.env.DB_DATABASE,
 });
 
-
-// Promisify the pool.query function
 const query = util.promisify(pool.query).bind(pool);
 
 module.exports = {
@@ -36,7 +34,6 @@ module.exports = {
       console.log(jsonData);
       console.log(result);
 
-      // The rest of your code...
     } catch (err) {
       console.error(err);
       res.status(500).send('Error processing the request');
@@ -88,7 +85,7 @@ module.exports = {
       // Append data to the new sheet
       const appendResult = await sheets.spreadsheets.values.append({
         spreadsheetId: '1vk9U8D8WY3EvQcqSVFPE9mzg5Wz1XjWd8vh5HsUMva8',
-        range: `${newSheetTitle}!A1`, // Use dynamic range
+        range: `${newSheetTitle}!A1`,
         valueInputOption: 'USER_ENTERED',
         resource: {
           values: values,
