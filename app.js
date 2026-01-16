@@ -12,7 +12,6 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html');
 });
 
-// Use the submitToGoogleSheet function from api.js
 app.post('/submit', api.submitToGoogleSheet);
 
 app.listen(port, () => {
