@@ -25,22 +25,16 @@ const pool = mysql.createPool({
   database: process.env.DB_DATABASE,
 });
 
-// Promisify the pool.query function
 const query = util.promisify(pool.query).bind(pool);
 
 exports.handler = async function(event) {
   try {
-    /*
-    Using the ternary operator to assign `groupName` and `boxNumber` ensures null values are assigned if `event.queryStringParameters` is undefined, preventing potential TypeError.
-    */
+
     const groupName = event.queryStringParameters ? event.queryStringParameters.groupName : null;
     const boxNumber = event.queryStringParameters ? event.queryStringParameters.boxNumber : null;
 
-
-    // Queue the processing task asynchronously
     await processAsync(groupName, boxNumber);
 
-    // Respond quickly without waiting for the processing to complete
     return {
       statusCode: 200,
       body: JSON.stringify({ success: true, message: 'Data submission acknowledged' }),
@@ -65,7 +59,6 @@ async function processAsync(groupName, boxNumber) {
     console.log(jsonData);
     console.log(result);
 
-    // Ensure jsonData is defined and not empty
     if (!jsonData || jsonData.length === 0) {
       console.error('jsonData is undefined or empty.');
       return;
@@ -75,7 +68,6 @@ async function processAsync(groupName, boxNumber) {
 
     console.log('Creating new sheet with title:', newSheetTitle);
 
-    // Create a new sheet
     const createSheetResult = await sheets.spreadsheets.batchUpdate({
       spreadsheetId: '1vk9U8D8WY3EvQcqSVFPE9mzg5Wz1XjWd8vh5HsUMva8',
       resource: {
@@ -114,6 +106,5 @@ async function processAsync(groupName, boxNumber) {
     console.log('Data submitted to Google Sheet:', appendResult.data);
   } catch (error) {
     console.error('Error processing asynchronously:', error);
-    // Handle errors as needed
   }
 }
